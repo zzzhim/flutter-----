@@ -1,12 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:untitled/db/hi_cache.dart';
 import 'package:untitled/http/core/hi_error.dart';
 import 'package:untitled/http/core/hi_net.dart';
 import 'package:untitled/http/core/mock_adpter.dart';
+import 'package:untitled/http/dao/login_dao.dart';
+import 'package:untitled/http/request/notice_request.dart';
 import 'package:untitled/model/owner.dart';
 import 'package:untitled/model/result.dart';
+import 'package:untitled/page/login_page.dart';
+import 'package:untitled/page/registration_page.dart';
 import 'package:untitled/test_request.dart';
+import 'package:untitled/util/color.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,9 +36,11 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: white,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: RegistrationPage(),
+      // home: LoginPage(),
     );
   }
 }
@@ -50,27 +58,34 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    test();
-    test1();
+    // test();
+    // test1();
+
     // TODO: implement initState
     super.initState();
+    HiCache.preInit();
   }
 
   void _incrementCounter() async {
-    TestRequest request = TestRequest();
-    request.add("aa", "ddd").add("requestPrams", "333");
+    test3();
+    test4();
+    print("----------------");
+    testNotice();
 
-    try {
-      var result = await HiNet.getInstance().fire(request);
+    // TestRequest request = TestRequest();
+    // request.add("aa", "ddd").add("requestPrams", "333");
 
-      print(result);
-    } on NeedAuth catch (e) {
-      print(e);
-    } on NeedLogin catch (e) {
-      print(e);
-    } on HiNetError catch (e) {
-      print(e);
-    }
+    // try {
+    //   var result = await HiNet.getInstance().fire(request);
+
+    //   print(result);
+    // } on NeedAuth catch (e) {
+    //   print(e);
+    // } on NeedLogin catch (e) {
+    //   print(e);
+    // } on HiNetError catch (e) {
+    //   print(e);
+    // }
   }
 
   void test() {
@@ -98,8 +113,33 @@ class _MyHomePageState extends State<MyHomePage> {
     print('fans: ${owner.fans}');
 
     print(owner.toJson());
-
     // Result result = Result.fromJson(json);
+  }
+
+  void test3() async {
+    try {
+      var res = await LoginDao.registration(
+        "zzzhim",
+        "123456",
+        "4522204",
+        "1620",
+      );
+
+      print(res);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void test4() async {
+    try {
+      var res = await LoginDao.login("zzzhim", "123456");
+
+      print(111);
+      print(res);
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -128,5 +168,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void testNotice() async {
+    try {
+      var res = await HiNet.getInstance().fire(NoticeRequest());
+
+      print(res);
+    } catch (e) {
+      print(e);
+    }
   }
 }
