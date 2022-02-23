@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:untitled/db/hi_cache.dart';
 import 'package:untitled/http/dao/login_dao.dart';
+import 'package:untitled/navigator/hi_navigator.dart';
 import 'package:untitled/util/string_util.dart';
 import 'package:untitled/util/toast.dart';
 import 'package:untitled/widget/appbar.dart';
@@ -27,7 +28,9 @@ class _LoginPageState extends State<LoginPage> {
     HiCache.preInit();
 
     return Scaffold(
-      appBar: appBar('登录', '注册', () {}),
+      appBar: appBar('登录', '注册', () {
+        HiNavigator.getInstance().onJumpTo(RouteStatus.registration);
+      }),
       body: Container(
           child: ListView(
         children: [
@@ -100,6 +103,8 @@ class _LoginPageState extends State<LoginPage> {
       if (res['code'] == 0) {
         print('登录成功');
         showToast('登录成功');
+
+        HiNavigator.getInstance().onJumpTo(RouteStatus.home);
       } else {
         print(res['msg']);
         showWarnToast(res['msg']);

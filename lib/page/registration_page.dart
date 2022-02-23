@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/http/dao/login_dao.dart';
+import 'package:untitled/navigator/hi_navigator.dart';
 import 'package:untitled/util/string_util.dart';
 import 'package:untitled/util/toast.dart';
 import 'package:untitled/widget/appbar.dart';
@@ -8,9 +9,7 @@ import 'package:untitled/widget/login_effect.dart';
 import 'package:untitled/widget/login_input.dart';
 
 class RegistrationPage extends StatefulWidget {
-  final VoidCallback? onJumpToLogin;
-
-  const RegistrationPage({Key? key, this.onJumpToLogin}) : super(key: key);
+  const RegistrationPage({Key? key}) : super(key: key);
 
   @override
   _RegistrationPageState createState() => _RegistrationPageState();
@@ -31,7 +30,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
       appBar: appBar(
         "注册",
         "登录",
-        widget.onJumpToLogin ?? () {},
+        () {
+          HiNavigator.getInstance().onJumpTo(RouteStatus.login);
+        },
       ),
       body: Container(
         child: ListView(children: <Widget>[
@@ -159,9 +160,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         print('注册成功');
         showToast('注册成功');
 
-        if (widget.onJumpToLogin != null) {
-          widget.onJumpToLogin!();
-        }
+        HiNavigator.getInstance().onJumpTo(RouteStatus.login);
       } else {
         print(res['msg']);
         showWarnToast(res['msg']);

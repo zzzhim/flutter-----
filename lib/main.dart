@@ -9,174 +9,158 @@ import 'package:untitled/http/dao/login_dao.dart';
 import 'package:untitled/http/request/notice_request.dart';
 import 'package:untitled/model/owner.dart';
 import 'package:untitled/model/result.dart';
+import 'package:untitled/model/video_model.dart';
+import 'package:untitled/navigator/hi_navigator.dart';
+import 'package:untitled/page/home_page.dart';
 import 'package:untitled/page/login_page.dart';
 import 'package:untitled/page/registration_page.dart';
+import 'package:untitled/page/video_detail_page.dart';
 import 'package:untitled/test_request.dart';
 import 'package:untitled/util/color.dart';
+import 'package:untitled/util/toast.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(BiliApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class BiliApp extends StatefulWidget {
+  @override
+  _BiliAppState createState() => _BiliAppState();
+}
 
-  // This widget is the root of your application.
+class _BiliAppState extends State<BiliApp> {
+  BiliRouteDelegate _routeDelegate = BiliRouteDelegate();
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: white,
-      ),
-      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      home: RegistrationPage(),
-      // home: LoginPage(),
-    );
+    return FutureBuilder<HiCache>(
+        future: HiCache.preInit(),
+        builder: (
+          BuildContext context,
+          AsyncSnapshot<HiCache> asyncSnapshot,
+        ) {
+          // 定义route
+          var widget = asyncSnapshot.connectionState == ConnectionState.done
+              ? Router(routerDelegate: _routeDelegate)
+              : Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+          return MaterialApp(
+            theme: ThemeData(primaryColor: Colors.white),
+            home: widget,
+          );
+        });
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<BiliRoutePath> {
+  final GlobalKey<NavigatorState>? navigatorKey;
+
+  BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>() {
+    // 实现路由跳转逻辑
+    HiNavigator.getInstance().registerRouteJump(
+        RouteJumpListener(onJumpTo: (RouteStatus routeStatus, {args}) {
+      _routeStatus = routeStatus;
+      if (routeStatus == RouteStatus.detail) {
+        this.videoModel = args!['videoMo'];
+      }
+
+      notifyListeners();
+    }));
+  }
+
+  RouteStatus _routeStatus = RouteStatus.home;
+
+  List<MaterialPage> pages = [];
+  VideoModel? videoModel;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+  Widget build(BuildContext context) {
+    var index = getPageIndex(pages, routeStatus);
+    List<MaterialPage> tempPages = pages;
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+    if (index != -1) {
+      // 要打开的页面在栈中已存在，则将该页面和它上面的所有页面进行出栈
+      // tips 具体规则可以根据需要进行调整，这里要求栈中只允许有一个同样的页面的实例
+      tempPages = tempPages.sublist(0, index);
+    }
 
-  @override
-  void initState() {
-    // test();
-    // test1();
-
-    // TODO: implement initState
-    super.initState();
-    HiCache.preInit();
-  }
-
-  void _incrementCounter() async {
-    test3();
-    test4();
-    print("----------------");
-    testNotice();
-
-    // TestRequest request = TestRequest();
-    // request.add("aa", "ddd").add("requestPrams", "333");
-
-    // try {
-    //   var result = await HiNet.getInstance().fire(request);
-
-    //   print(result);
-    // } on NeedAuth catch (e) {
-    //   print(e);
-    // } on NeedLogin catch (e) {
-    //   print(e);
-    // } on HiNetError catch (e) {
-    //   print(e);
-    // }
-  }
-
-  void test() {
-    const jsonString = "{\"name\": \"flutter\"}";
-
-    // json转map
-    Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-    print(jsonMap);
-    print(jsonMap['name']);
-
-    // map转json
-    print(jsonEncode(jsonMap));
-  }
-
-  void test1() {
-    var ownerMap = {
-      "name": "翼龙11",
-      "face": "www.baidu.com",
-      "fans": 0,
-    };
-
-    Owner owner = Owner.fromJson(ownerMap);
-    print('name: ${owner.name}');
-    print('face: ${owner.face}');
-    print('fans: ${owner.fans}');
-
-    print(owner.toJson());
-    // Result result = Result.fromJson(json);
-  }
-
-  void test3() async {
-    try {
-      var res = await LoginDao.registration(
-        "zzzhim",
-        "123456",
-        "4522204",
-        "1620",
+    var page;
+    if (routeStatus == RouteStatus.home) {
+      // 跳转首页时将栈中其他页面进行出栈，因为首页不可回退
+      pages.clear();
+      page = pageWrap(
+        HomePage(),
       );
-
-      print(res);
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  void test4() async {
-    try {
-      var res = await LoginDao.login("zzzhim", "123456");
-
-      print(111);
-      print(res);
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              '我的22111',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+    } else if (routeStatus == RouteStatus.detail) {
+      page = pageWrap(
+        VideoDetailPage(
+          videoModel: videoModel!,
         ),
+      );
+    } else if (routeStatus == RouteStatus.registration) {
+      page = pageWrap(RegistrationPage());
+    } else if (routeStatus == RouteStatus.login) {
+      page = pageWrap(LoginPage());
+    }
+
+    // 重新创建一个数组，否则pages因引用没有改变路由不会生效
+    tempPages = [...tempPages, page];
+    pages = tempPages;
+
+    return WillPopScope(
+      child: Navigator(
+        key: navigatorKey,
+        pages: pages,
+        onPopPage: (route, result) {
+          if (route.settings is MaterialPage) {
+            // 登录页未登录返回拦截
+            if ((route.settings as MaterialPage).child is LoginPage) {
+              if (!hasLogin) {
+                showWarnToast("请先登录");
+                return false;
+              }
+            }
+          }
+
+          // 在这里控制是否可以返回
+          if (!route.didPop(result)) {
+            return false;
+          }
+
+          // 出栈
+          pages.removeLast();
+          return true;
+        },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      // 安卓物理返回键，无法返回上一页修复
+      onWillPop: () async => !await navigatorKey!.currentState!.maybePop(),
     );
   }
 
-  void testNotice() async {
-    try {
-      var res = await HiNet.getInstance().fire(NoticeRequest());
+  @override
+  Future<void> setNewRoutePath(BiliRoutePath configuration) async {}
 
-      print(res);
-    } catch (e) {
-      print(e);
+  RouteStatus get routeStatus {
+    if (_routeStatus != RouteStatus.registration && !hasLogin) {
+      return _routeStatus = RouteStatus.login;
+    } else if (videoModel != null) {
+      return _routeStatus = RouteStatus.detail;
     }
+
+    return _routeStatus;
   }
+
+  bool get hasLogin => LoginDao.getBoardingPass() != null;
+}
+
+class BiliRoutePath {
+  final String location;
+
+  BiliRoutePath.home() : location = "/";
+
+  BiliRoutePath.detail() : location = "/detail";
 }
