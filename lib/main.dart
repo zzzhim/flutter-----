@@ -10,6 +10,7 @@ import 'package:untitled/http/request/notice_request.dart';
 import 'package:untitled/model/owner.dart';
 import 'package:untitled/model/result.dart';
 import 'package:untitled/model/video_model.dart';
+import 'package:untitled/navigator/bottom_navigator.dart';
 import 'package:untitled/navigator/hi_navigator.dart';
 import 'package:untitled/page/home_page.dart';
 import 'package:untitled/page/login_page.dart';
@@ -93,7 +94,8 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
       // 跳转首页时将栈中其他页面进行出栈，因为首页不可回退
       pages.clear();
       page = pageWrap(
-        HomePage(),
+        // HomePage(),
+        BottomNavigator(),
       );
     } else if (routeStatus == RouteStatus.detail) {
       page = pageWrap(
@@ -110,6 +112,9 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
     // 重新创建一个数组，否则pages因引用没有改变路由不会生效
     tempPages = [...tempPages, page];
     pages = tempPages;
+
+    // 通知路由发生变化
+    HiNavigator.getInstance().notify(tempPages, pages);
 
     return WillPopScope(
       child: Navigator(
@@ -130,9 +135,11 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
           if (!route.didPop(result)) {
             return false;
           }
-
+          var tempPages = [...pages];
           // 出栈
           pages.removeLast();
+          // 通知路由发生变化
+          HiNavigator.getInstance().notify(pages, tempPages);
           return true;
         },
       ),

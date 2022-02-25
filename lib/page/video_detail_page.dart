@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/model/video_model.dart';
+import 'package:untitled/navigator/hi_navigator.dart';
 
 class VideoDetailPage extends StatefulWidget {
   final VideoModel videoModel;
@@ -11,6 +12,20 @@ class VideoDetailPage extends StatefulWidget {
 }
 
 class _VideoDetailPageState extends State<VideoDetailPage> {
+  var listener;
+
+  @override
+  void initState() {
+    super.initState();
+
+    this.listener = (current, pre) {
+      print('current:${current?.page}');
+      print('pre:${pre?.page}');
+    };
+
+    HiNavigator.getInstance().addListener(this.listener);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,5 +34,12 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
         child: Text('视频详情页，vid ${widget.videoModel.vid}'),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    HiNavigator.getInstance().removeListener(this.listener);
+
+    super.dispose();
   }
 }
