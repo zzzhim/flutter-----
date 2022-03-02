@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/model/video_model.dart';
+import 'package:untitled/model/home_mo.dart';
 import 'package:untitled/navigator/hi_navigator.dart';
 
 class VideoDetailPage extends StatefulWidget {
-  final VideoModel videoModel;
+  final VideoMo videoModel;
 
   const VideoDetailPage({Key? key, required this.videoModel}) : super(key: key);
 

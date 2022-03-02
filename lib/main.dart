@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:untitled/db/hi_cache.dart';
 import 'package:untitled/http/core/hi_error.dart';
@@ -7,9 +6,9 @@ import 'package:untitled/http/core/hi_net.dart';
 import 'package:untitled/http/core/mock_adpter.dart';
 import 'package:untitled/http/dao/login_dao.dart';
 import 'package:untitled/http/request/notice_request.dart';
+import 'package:untitled/model/home_mo.dart';
 import 'package:untitled/model/owner.dart';
 import 'package:untitled/model/result.dart';
-import 'package:untitled/model/video_model.dart';
 import 'package:untitled/navigator/bottom_navigator.dart';
 import 'package:untitled/navigator/hi_navigator.dart';
 import 'package:untitled/page/home_page.dart';
@@ -76,7 +75,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
   RouteStatus _routeStatus = RouteStatus.home;
 
   List<MaterialPage> pages = [];
-  VideoModel? videoModel;
+  VideoMo? videoModel;
 
   @override
   Widget build(BuildContext context) {

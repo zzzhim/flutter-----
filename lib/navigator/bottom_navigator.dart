@@ -26,7 +26,9 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   @override
   Widget build(BuildContext context) {
     _pages = [
-      HomePage(),
+      HomePage(
+        onJumpTo: (index) => _onJumpTo(index, pageChange: false),
+      ),
       RankPage(),
       FavoritePage(),
       ProfilePage(),
