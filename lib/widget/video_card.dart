@@ -3,6 +3,7 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:untitled/model/home_mo.dart';
 import 'package:untitled/navigator/hi_navigator.dart';
 import 'package:untitled/util/format_urli.dart';
+import 'package:untitled/util/view_util.dart';
 
 class VideoCard extends StatelessWidget {
   final VideoMo videoMo;
@@ -42,14 +43,19 @@ class VideoCard extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Stack(
       children: [
-        FadeInImage.memoryNetwork(
-          placeholder: kTransparentImage,
-          image: videoMo.cover ?? "",
+        cachedImage(
+          videoMo.cover ?? "",
           width: size.width / 2 - 20,
           height: 120,
-          fit: BoxFit.cover,
-          alignment: Alignment.center,
         ),
+        // FadeInImage.memoryNetwork(
+        //   placeholder: kTransparentImage,
+        //   image: videoMo.cover ?? "",
+        //   width: size.width / 2 - 20,
+        //   height: 120,
+        //   fit: BoxFit.cover,
+        //   alignment: Alignment.center,
+        // ),
         Positioned(
           left: 0,
           right: 0,
@@ -145,11 +151,16 @@ class VideoCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
+              child: cachedImage(
                 owner?.face ?? "",
                 width: 24,
                 height: 24,
               ),
+              // child: Image.network(
+              //   owner?.face ?? "",
+              //   width: 24,
+              //   height: 24,
+              // ),
             ),
             Padding(
               padding: EdgeInsets.only(left: 8),
