@@ -11,6 +11,7 @@ import 'package:untitled/page/video_detail_page.dart';
 import 'package:untitled/util/color.dart';
 import 'package:untitled/util/toast.dart';
 import 'package:untitled/util/view_util.dart';
+import 'package:untitled/widget/hi_tab.dart';
 import 'package:untitled/widget/loading_container.dart';
 import 'package:untitled/widget/navigation_bar.dart';
 
@@ -153,23 +154,17 @@ class _HomePageState extends HiState<HomePage>
   bool get wantKeepAlive => true;
 
   _tabBar() {
-    return TabBar(
-      controller: _controller,
-      isScrollable: true,
-      labelColor: Colors.black,
-      indicator: UnderlineIndicator(
-        strokeCap: StrokeCap.round,
-        borderSide: BorderSide(color: primary, width: 3),
-        insets: EdgeInsets.only(left: 15, right: 15),
-      ),
-      tabs: categoryList.map<Tab>((tab) {
+    return HiTab(
+      categoryList.map<Tab>((tab) {
         return Tab(
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(tab.name ?? ""),
-          ),
+          text: tab.name,
         );
       }).toList(),
+      controller: _controller,
+      fontSize: 16,
+      borderWidth: 3,
+      unselectedLabelColor: Colors.black54,
+      insets: 13,
     );
   }
 

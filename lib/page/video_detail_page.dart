@@ -5,6 +5,7 @@ import 'package:untitled/model/home_mo.dart';
 import 'package:untitled/navigator/hi_navigator.dart';
 import 'package:untitled/util/view_util.dart';
 import 'package:untitled/widget/appbar.dart';
+import 'package:untitled/widget/hi_tab.dart';
 import 'package:untitled/widget/navigation_bar.dart';
 import 'package:untitled/widget/video_view.dart';
 
@@ -17,25 +18,22 @@ class VideoDetailPage extends StatefulWidget {
   _VideoDetailPageState createState() => _VideoDetailPageState();
 }
 
-class _VideoDetailPageState extends State<VideoDetailPage> {
-  var listener;
+class _VideoDetailPageState extends State<VideoDetailPage>
+    with TickerProviderStateMixin {
+  TabController? _controller;
+  List tabs = ["简介", "评论288"];
 
   @override
   void initState() {
     super.initState();
-
-    // listener = (current, pre) {
-    //   print('current:${current?.page}');
-    //   print('pre:${pre?.page}');
-    // };
-
-    // HiNavigator.getInstance().addListener(listener);
 
     // 设置黑色状态栏
     changeStatusBar(
       color: Colors.black,
       statusStyle: StatusStyle.LIGHT_CONTENT,
     );
+
+    _controller = TabController(length: tabs.length, vsync: this);
   }
 
   @override
@@ -53,7 +51,8 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                 child: Container(),
                 height: MediaQuery.of(context).padding.top,
               ),
-              _videoView(),
+              _buildVideoView(),
+              _buildTabNavigation(),
             ],
           ),
         ),
@@ -64,17 +63,54 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
   @override
   void dispose() {
     // HiNavigator.getInstance().removeListener(listener);
-
+    _controller?.dispose();
     super.dispose();
   }
 
-  _videoView() {
+  _buildVideoView() {
     var model = widget.videoModel;
     return VideoView(
       model.url ?? '',
       cover: model.cover,
       autoPlay: true,
       overlayUI: videoAppBar(),
+    );
+  }
+
+  _buildTabNavigation() {
+    return Material(
+      elevation: 5,
+      shadowColor: Colors.grey[100],
+      child: Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.only(left: 20),
+        height: 39,
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _tabBar(),
+            Padding(
+              padding: EdgeInsets.only(right: 20),
+              child: Icon(
+                Icons.live_tv_rounded,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _tabBar() {
+    return HiTab(
+      tabs.map<Tab>((tabName) {
+        return Tab(
+          text: tabName,
+        );
+      }).toList(),
+      controller: _controller,
     );
   }
 }
