@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/model/home_mo.dart';
 import 'package:untitled/navigator/hi_navigator.dart';
+import 'package:untitled/widget/video_view.dart';
 
 class VideoDetailPage extends StatefulWidget {
   final VideoMo videoModel;
@@ -18,12 +19,12 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
   void initState() {
     super.initState();
 
-    this.listener = (current, pre) {
+    listener = (current, pre) {
       print('current:${current?.page}');
       print('pre:${pre?.page}');
     };
 
-    HiNavigator.getInstance().addListener(this.listener);
+    HiNavigator.getInstance().addListener(listener);
   }
 
   @override
@@ -31,15 +32,28 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     return Scaffold(
       appBar: AppBar(),
       body: Container(
-        child: Text('视频详情页，vid ${widget.videoModel.vid}'),
+        // child: Text('视频详情页，vid ${widget.videoModel.vid}'),
+        child: Column(children: [
+          Text('视频详情页，vid ${widget.videoModel.vid}'),
+          Text('视频详情页，vid ${widget.videoModel.title}'),
+          _videoView(),
+        ]),
       ),
     );
   }
 
   @override
   void dispose() {
-    HiNavigator.getInstance().removeListener(this.listener);
+    HiNavigator.getInstance().removeListener(listener);
 
     super.dispose();
+  }
+
+  _videoView() {
+    var model = widget.videoModel;
+    return VideoView(
+      model.url ?? '',
+      cover: model.cover,
+    );
   }
 }
