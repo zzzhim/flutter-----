@@ -6,8 +6,11 @@ import 'package:untitled/http/dao/home_dao.dart';
 import 'package:untitled/model/home_mo.dart';
 import 'package:untitled/navigator/hi_navigator.dart';
 import 'package:untitled/page/home_tab_page.dart';
+import 'package:untitled/page/profile_page.dart';
+import 'package:untitled/page/video_detail_page.dart';
 import 'package:untitled/util/color.dart';
 import 'package:untitled/util/toast.dart';
+import 'package:untitled/util/view_util.dart';
 import 'package:untitled/widget/loading_container.dart';
 import 'package:untitled/widget/navigation_bar.dart';
 
@@ -24,20 +27,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends HiState<HomePage>
-    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+    with
+        AutomaticKeepAliveClientMixin,
+        TickerProviderStateMixin,
+        WidgetsBindingObserver {
   var listener;
   TabController? _controller;
   List<CategoryMo> categoryList = [];
   List<BannerMo> bannerList = [];
   bool _isLoading = true;
+  Widget? _currentPage;
 
   @override
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance?.addObserver(this);
+
     _controller = TabController(length: categoryList.length, vsync: this);
 
     this.listener = (current, pre) {
+      _currentPage = current?.page;
       print('current:${current?.page}');
       print('pre:${pre?.page}');
 
@@ -45,6 +55,13 @@ class _HomePageState extends HiState<HomePage>
         print('打开了首页, onResume');
       } else if (widget == pre?.page || pre?.page is HomePage) {
         print('首页: onPause');
+      }
+
+      // 当页面返回到首页恢复首页的状态栏样式
+      if (pre?.page is VideoDetailPage && !(current?.page is ProfilePage)) {
+        var statusStyle = StatusStyle.DARK_CONTENT;
+
+        changeStatusBar(color: Colors.white, statusStyle: statusStyle);
       }
     };
 
@@ -97,7 +114,39 @@ class _HomePageState extends HiState<HomePage>
     HiNavigator.getInstance().removeListener(this.listener);
     _controller?.dispose();
 
+    WidgetsBinding.instance?.removeObserver(this);
+
     super.dispose();
+  }
+
+  // 监听应用生命周期的变化
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+    print('didChangeAppLifecycleState:$state');
+
+    switch (state) {
+      case AppLifecycleState.inactive: // 处于这种状态的应用程序应该假设它们可能在任何时候暂停
+
+        break;
+      case AppLifecycleState.resumed: // 从后台切换到前台，界面可见
+        // fix 安卓压入后台，状态栏字体颜色变白问题
+
+        if (!(_currentPage is VideoDetailPage)) {
+          // 是否是详情页面
+          changeStatusBar(
+              color: Colors.white, statusStyle: StatusStyle.DARK_CONTENT);
+        }
+        break;
+      case AppLifecycleState.paused: // 界面不可见，后台
+
+        break;
+      case AppLifecycleState.detached: // app结束时调用
+
+        break;
+      default:
+    }
   }
 
   @override
