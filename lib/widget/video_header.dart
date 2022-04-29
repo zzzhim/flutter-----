@@ -1,7 +1,6 @@
 // 详情页面
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:untitled/model/home_mo.dart';
+import 'package:untitled/model/video_model.dart';
 import 'package:untitled/util/color.dart';
 import 'package:untitled/util/format_urli.dart';
 

@@ -1,17 +1,18 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:untitled/model/home_mo.dart';
-import 'package:untitled/navigator/hi_navigator.dart';
+import 'package:untitled/http/dao/video_detail_dao.dart';
+import 'package:untitled/model/video_detail_mo.dart';
+import 'package:untitled/model/video_model.dart';
+import 'package:untitled/util/toast.dart';
 import 'package:untitled/util/view_util.dart';
 import 'package:untitled/widget/appbar.dart';
+import 'package:untitled/widget/expandable_content.dart';
 import 'package:untitled/widget/hi_tab.dart';
 import 'package:untitled/widget/navigation_bar.dart';
 import 'package:untitled/widget/video_header.dart';
 import 'package:untitled/widget/video_view.dart';
 
 class VideoDetailPage extends StatefulWidget {
-  final VideoMo videoModel;
+  final VideoModel? videoModel;
 
   const VideoDetailPage({Key? key, required this.videoModel}) : super(key: key);
 
@@ -23,6 +24,7 @@ class _VideoDetailPageState extends State<VideoDetailPage>
     with TickerProviderStateMixin {
   TabController? _controller;
   List tabs = ["简介", "评论288"];
+  VideoDetailMo? videoDetailMo;
 
   @override
   void initState() {
@@ -35,6 +37,8 @@ class _VideoDetailPageState extends State<VideoDetailPage>
     );
 
     _controller = TabController(length: tabs.length, vsync: this);
+
+    _loadDetail();
   }
 
   @override
@@ -82,8 +86,8 @@ class _VideoDetailPageState extends State<VideoDetailPage>
   _buildVideoView() {
     var model = widget.videoModel;
     return VideoView(
-      model.url ?? '',
-      cover: model.cover,
+      model?.url ?? '',
+      cover: model?.cover,
       autoPlay: true,
       overlayUI: videoAppBar(),
     );
@@ -131,15 +135,38 @@ class _VideoDetailPageState extends State<VideoDetailPage>
       padding: EdgeInsets.all(0),
       children: [
         ...buildContents(),
+        Container(
+          height: 500,
+          child: Text(widget.videoModel?.vid?.toString() ?? ''),
+        )
       ],
     );
   }
 
   buildContents() {
+    var videoModeldel = widget.videoModel!;
+
     return [
       Container(
-        child: VideoHeader(owner: widget.videoModel.owner as Owner),
+        child: VideoHeader(owner: videoModeldel.owner!),
       ),
+      ExpandableContent(mo: videoModeldel),
     ];
+  }
+
+  void _loadDetail() async {
+    try {
+      VideoDetailMo result =
+          await VideoDetailDao.get(widget.videoModel!.vid.toString());
+
+      print(result);
+
+      setState(() {
+        videoDetailMo = result;
+      });
+    } catch (e) {
+      print(e);
+      showWarnToast('未知错误');
+    }
   }
 }

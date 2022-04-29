@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:untitled/model/home_mo.dart';
+import 'package:untitled/model/video_model.dart';
 import 'package:untitled/navigator/hi_navigator.dart';
 import 'package:untitled/util/format_urli.dart';
 import 'package:untitled/util/view_util.dart';
 
 class VideoCard extends StatelessWidget {
-  final VideoMo videoMo;
+  final VideoModel videoMo;
 
   const VideoCard({Key? key, required this.videoMo}) : super(key: key);
 

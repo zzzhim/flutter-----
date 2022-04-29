@@ -2,6 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
+import 'package:untitled/util/format_urli.dart';
 import 'package:untitled/widget/navigation_bar.dart';
 
 Widget cachedImage(String url, {double? width, double? height}) {
@@ -55,4 +56,24 @@ void changeStatusBar({
   await FlutterStatusbarcolor.setStatusBarWhiteForeground(
     statusStyle == StatusStyle.DARK_CONTENT,
   );
+}
+
+smallIconText(IconData iconData, var text) {
+  var style = TextStyle(fontSize: 12, color: Colors.grey);
+
+  if (text is int) {
+    text = countFormat(text);
+  }
+
+  return [
+    Icon(
+      iconData,
+      color: Colors.grey,
+      size: 12,
+    ),
+    Text(
+      ' $text',
+      style: style,
+    ),
+  ];
 }

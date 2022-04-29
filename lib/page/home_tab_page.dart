@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:untitled/http/dao/home_dao.dart';
 import 'package:untitled/model/home_mo.dart';
+import 'package:untitled/model/video_model.dart';
 import 'package:untitled/util/color.dart';
 import 'package:untitled/widget/hi_banner.dart';
 import 'package:untitled/widget/video_card.dart';
@@ -22,7 +23,7 @@ class HomeTabPage extends StatefulWidget {
 
 class _HomeTabPageState extends State<HomeTabPage>
     with AutomaticKeepAliveClientMixin {
-  List<VideoMo> videoList = [];
+  List<VideoModel> videoList = [];
   int pageIndex = 1;
   ScrollController _scrollController = ScrollController();
 

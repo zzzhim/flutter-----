@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
 import 'package:untitled/model/home_mo.dart';
+import 'package:untitled/model/video_model.dart';
 import 'package:untitled/navigator/hi_navigator.dart';
 
 class HiBanner extends StatelessWidget {
@@ -69,7 +70,7 @@ class HiBanner extends StatelessWidget {
       HiNavigator.getInstance().onJumpTo(
         RouteStatus.detail,
         args: {
-          'videoMo': VideoMo(vid: bannerMo.url),
+          'videoMo': VideoModel(vid: bannerMo.url),
         },
       );
     } else {
