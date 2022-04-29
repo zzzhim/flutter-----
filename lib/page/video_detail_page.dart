@@ -7,6 +7,7 @@ import 'package:untitled/util/view_util.dart';
 import 'package:untitled/widget/appbar.dart';
 import 'package:untitled/widget/hi_tab.dart';
 import 'package:untitled/widget/navigation_bar.dart';
+import 'package:untitled/widget/video_header.dart';
 import 'package:untitled/widget/video_view.dart';
 
 class VideoDetailPage extends StatefulWidget {
@@ -53,6 +54,17 @@ class _VideoDetailPageState extends State<VideoDetailPage>
               ),
               _buildVideoView(),
               _buildTabNavigation(),
+              Flexible(
+                child: TabBarView(
+                  controller: _controller,
+                  children: [
+                    _buildDetailList(),
+                    Container(
+                      child: Text('1111'),
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -90,7 +102,7 @@ class _VideoDetailPageState extends State<VideoDetailPage>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _tabBar(),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(right: 20),
               child: Icon(
                 Icons.live_tv_rounded,
@@ -112,5 +124,22 @@ class _VideoDetailPageState extends State<VideoDetailPage>
       }).toList(),
       controller: _controller,
     );
+  }
+
+  _buildDetailList() {
+    return ListView(
+      padding: EdgeInsets.all(0),
+      children: [
+        ...buildContents(),
+      ],
+    );
+  }
+
+  buildContents() {
+    return [
+      Container(
+        child: VideoHeader(owner: widget.videoModel.owner as Owner),
+      ),
+    ];
   }
 }
