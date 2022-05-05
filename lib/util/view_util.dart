@@ -1,10 +1,10 @@
-// 带缓存的image
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 import 'package:untitled/util/format_urli.dart';
 import 'package:untitled/widget/navigation_bar.dart';
 
+// 带缓存的image
 Widget cachedImage(String url, {double? width, double? height}) {
   return CachedNetworkImage(
     imageUrl: url,
@@ -76,4 +76,24 @@ smallIconText(IconData iconData, var text) {
       style: style,
     ),
   ];
+}
+
+// border线
+borderLine(BuildContext context, {bool bottom = true, bool top = false}) {
+  BorderSide borderSide = BorderSide(
+    width: 0.5,
+    color: Colors.grey.shade200,
+  );
+  return Border(
+    bottom: bottom ? borderSide : BorderSide.none,
+    top: top ? borderSide : BorderSide.none,
+  );
+}
+
+// 间距
+SizedBox hiSpace({double height: 1, double width: 1}) {
+  return SizedBox(
+    height: height,
+    width: width,
+  );
 }

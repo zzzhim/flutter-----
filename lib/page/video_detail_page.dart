@@ -9,6 +9,7 @@ import 'package:untitled/widget/expandable_content.dart';
 import 'package:untitled/widget/hi_tab.dart';
 import 'package:untitled/widget/navigation_bar.dart';
 import 'package:untitled/widget/video_header.dart';
+import 'package:untitled/widget/video_toolbar.dart';
 import 'package:untitled/widget/video_view.dart';
 
 class VideoDetailPage extends StatefulWidget {
@@ -25,10 +26,13 @@ class _VideoDetailPageState extends State<VideoDetailPage>
   TabController? _controller;
   List tabs = ["简介", "评论288"];
   VideoDetailMo? videoDetailMo;
+  VideoModel? videoModel;
 
   @override
   void initState() {
     super.initState();
+
+    videoModel = widget.videoModel;
 
     // 设置黑色状态栏
     changeStatusBar(
@@ -48,29 +52,31 @@ class _VideoDetailPageState extends State<VideoDetailPage>
         context: context,
         removeTop: true,
         child: Container(
-          child: Column(
-            children: [
-              HiNavigationBar(
-                color: Colors.black,
-                statusStyle: StatusStyle.LIGHT_CONTENT,
-                child: Container(),
-                height: MediaQuery.of(context).padding.top,
-              ),
-              _buildVideoView(),
-              _buildTabNavigation(),
-              Flexible(
-                child: TabBarView(
-                  controller: _controller,
+          child: videoModel?.url != null
+              ? Column(
                   children: [
-                    _buildDetailList(),
-                    Container(
-                      child: Text('1111'),
-                    )
+                    HiNavigationBar(
+                      color: Colors.black,
+                      statusStyle: StatusStyle.LIGHT_CONTENT,
+                      child: Container(),
+                      height: MediaQuery.of(context).padding.top,
+                    ),
+                    _buildVideoView(),
+                    _buildTabNavigation(),
+                    Flexible(
+                      child: TabBarView(
+                        controller: _controller,
+                        children: [
+                          _buildDetailList(),
+                          Container(
+                            child: Text('1111'),
+                          )
+                        ],
+                      ),
+                    ),
                   ],
-                ),
-              ),
-            ],
-          ),
+                )
+              : Container(),
         ),
       ),
     );
@@ -84,7 +90,7 @@ class _VideoDetailPageState extends State<VideoDetailPage>
   }
 
   _buildVideoView() {
-    var model = widget.videoModel;
+    var model = videoModel;
     return VideoView(
       model?.url ?? '',
       cover: model?.cover,
@@ -137,32 +143,44 @@ class _VideoDetailPageState extends State<VideoDetailPage>
         ...buildContents(),
         Container(
           height: 500,
-          child: Text(widget.videoModel?.vid?.toString() ?? ''),
+          child: Text(videoModel?.vid?.toString() ?? ''),
         )
       ],
     );
   }
 
   buildContents() {
-    var videoModeldel = widget.videoModel!;
+    var videoModeldel = videoModel!;
 
     return [
-      Container(
-        child: VideoHeader(owner: videoModeldel.owner!),
-      ),
+      VideoHeader(owner: videoModeldel.owner!),
       ExpandableContent(mo: videoModeldel),
+      VideoToolbar(
+        detailMo: videoDetailMo,
+        videoModel: videoModel!,
+        onLike: _doLike,
+        onUnLike: _onUnLike,
+        onFavorite: _onFavorite,
+      ),
     ];
   }
+
+  _doLike() {}
+
+  _onUnLike() {}
+
+  _onFavorite() {}
 
   void _loadDetail() async {
     try {
       VideoDetailMo result =
-          await VideoDetailDao.get(widget.videoModel!.vid.toString());
+          await VideoDetailDao.get(videoModel!.vid.toString());
 
       print(result);
 
       setState(() {
         videoDetailMo = result;
+        videoModel = result.videoInfo;
       });
     } catch (e) {
       print(e);
